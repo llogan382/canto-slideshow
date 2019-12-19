@@ -2,7 +2,22 @@ import CantoCreds from './keys.js';
 
 let appendHere = document.querySelector(".images");
 
-let request = new Request('https://highpoint.canto.com/api/v1/album/V5PFF', { method: 'GET', credentials: 'include' });
+
+/*
+
+The following properties are used in Canto:
+
+Scheme: Image, Video, Audio, Document, Presentation, and Other.
+Id: Id of the Folder, Album or Asset
+Created:  Original created time.
+Time: Last modified time.
+Owner: The User Id of first the uploader.
+OwnerName: The Username of the asset owner.
+*/
+
+let results = '/?sortBy=name&scheme=folder&layer=1';
+
+let request = new Request('https://highpoint.canto.com/api/v1/tree' + results, { method: 'GET', credentials: 'include' });
 const url = request.url;
 const method = request.method;
 const myHeaders = url.headers;
@@ -12,12 +27,11 @@ const credentials = request.credentials;
 
 fetch(request)
     .then(response => response.json())
-    .then(images => {
-        for (const image of images.results) {
-            console.log(image);
-            var imageCont =
+    .then(folders => {
+        for (const folder of folders.results) {
+            var folderButtons =
                 appendHere.innerHTML += `
-            <img src="${image.url.directUrlPreview}">
+            <a href="${folder.url.detail}"> ${folder.name}</a> </br>
             `
         }
     });
