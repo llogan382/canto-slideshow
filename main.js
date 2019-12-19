@@ -1,5 +1,4 @@
-import * as keys from './keys.js';
-
+import CantoCreds from './keys.js';
 
 let appendHere = document.querySelector(".images");
 
