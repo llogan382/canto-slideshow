@@ -9,7 +9,7 @@ let appendHere = document.querySelector(".searchResults");
 const runQuery = (directory) => {
     appendHere.innerHTML = ""; //clear html before query
 
-    let results = '/?sortBy=name&scheme=folder&layer=1'; //how to sort the results
+    let results = '/?scheme=folder|album|image|video&layer=1'; //how to sort the results
 
     let queryFolder = (directory) ? directory : '/tree'; //default is tree. Then, run folders
 
