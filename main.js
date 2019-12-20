@@ -1,45 +1,46 @@
 import CantoCreds from './keys.js';
 
 let appendHere = document.querySelector(".searchResults");
+let eventListeners = document.querySelectorAll('.searchResults');
 
 
-
-async function runQuery(empty) {
-    let folderID = (empty) ? empty : "";
-    let response = await fetch('https://highpoint.canto.com/api/v1' + '/tree/' + folderID + '?sortby=scheme&layer=1', { method: 'GET', credentials: 'include' });
-    console.log(`this is emtpty ${folderID}`);
+async function runQuery(url) {
+    console.log(url);
+    let response = await fetch(url, { method: 'GET', credentials: 'include' });
     // let headers = new Headers();
     // headers.append("Authorization", "Bearer" + CantoCreds.accessToken);
     return await response.json();
-
 }
-function getLinks() {
-    let allLinks = document.querySelectorAll('.cantoLink');
-    for (const link of allLinks) {
-        let linkID = link.attributes.href.value.slice(-5);
-        link.addEventListener("click", function runScript() {
-            runQuery(linkID);
-        });
+
+
+
+async function displayResults(url) {
+
+    let jsonData = runQuery(url);
+    const newQuery = (event) => {
+        console.log(event);
+        event.preventDefault();
+        displayResults('https://highpoint.canto.com/api/v1/tree/' + id + '?sortby=scheme&layer=1');
+        // console.log(id);
     }
+    jsonData
+        .then((json => {
+            let htmlResults = json.results.map(x =>
+                `<div class="searchResults">${x.name}</div>`);
+            return htmlResults;
+        }
+
+        ))
+        .then((html) => {
+            let removeCommas = html.toString();
+            let newHTML = removeCommas.replace(/\>,/g, '>');
+
+            appendHere.innerHTML = newHTML;
+
+        });
+
 }
 
 
-runQuery()
-    .then((json => {
-        console.log('after async');
-        for (const folder of json.results) { //loop over results
-            var cantoButton = document.createElement("DIV"); //create a buton
-            cantoButton.setAttribute("href", folder.url.detail); //create link for each button
-            cantoButton.setAttribute("class", 'cantoLink'); //create link for each button
 
-            var textnode = document.createTextNode(folder.name); //add text to the button
-
-            cantoButton.appendChild(textnode);
-
-            appendHere.appendChild(cantoButton);
-            cantoButton.insertAdjacentHTML("afterend", "</br>");
-        }
-        getLinks();
-
-    })
-    );
+displayResults('https://highpoint.canto.com/api/v1/tree/?sortby=scheme&layer=1');
