@@ -1,11 +1,21 @@
 import CantoCreds from './keys.js';
 
 let appendHere = document.querySelector(".searchResults");
-let eventListeners = document.querySelectorAll('.searchResults');
 
+
+function addButtons() {
+    let cantoItems = document.querySelectorAll('.canto-items');
+
+    for (const item of cantoItems) {
+        item.addEventListener("click", function newQuery(event) {
+            let id = event.target.dataset.target;
+
+            console.log(id);
+        });
+    }
+}
 
 async function runQuery(url) {
-    console.log(url);
     let response = await fetch(url, { method: 'GET', credentials: 'include' });
     // let headers = new Headers();
     // headers.append("Authorization", "Bearer" + CantoCreds.accessToken);
@@ -17,27 +27,28 @@ async function runQuery(url) {
 async function displayResults(url) {
 
     let jsonData = runQuery(url);
-    const newQuery = (event) => {
-        console.log(event);
-        event.preventDefault();
-        displayResults('https://highpoint.canto.com/api/v1/tree/' + id + '?sortby=scheme&layer=1');
-        // console.log(id);
-    }
+
     jsonData
         .then((json => {
             let htmlResults = json.results.map(x =>
-                `<div class="searchResults">${x.name}</div>`);
+                `<div data-target="${x.id}" class="canto-items">${x.name}</div>`);
+
             return htmlResults;
         }
-
         ))
         .then((html) => {
             let removeCommas = html.toString();
             let newHTML = removeCommas.replace(/\>,/g, '>');
 
-            appendHere.innerHTML = newHTML;
+            return newHTML;
 
-        });
+        }).then(addHTML => {
+            appendHere.innerHTML = addHTML;
+            return;
+        }).then((folders) => {
+            addButtons(folders);
+        })
+        ;
 
 }
 
